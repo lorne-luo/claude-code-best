@@ -21,6 +21,19 @@ const TIERS = [
     modelEnvVar: 'ANTHROPIC_DEFAULT_HAIKU_MODEL',
     capabilitiesEnvVar: 'ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES',
   },
+  // Third-party models
+  {
+    modelEnvVar: 'ANTHROPIC_DEFAULT_KIMI_MODEL',
+    capabilitiesEnvVar: 'ANTHROPIC_DEFAULT_KIMI_MODEL_SUPPORTED_CAPABILITIES',
+  },
+  {
+    modelEnvVar: 'ANTHROPIC_DEFAULT_GLM_MODEL',
+    capabilitiesEnvVar: 'ANTHROPIC_DEFAULT_GLM_MODEL_SUPPORTED_CAPABILITIES',
+  },
+  {
+    modelEnvVar: 'ANTHROPIC_DEFAULT_MINIMAX_MODEL',
+    capabilitiesEnvVar: 'ANTHROPIC_DEFAULT_MINIMAX_MODEL_SUPPORTED_CAPABILITIES',
+  },
 ] as const
 
 /**

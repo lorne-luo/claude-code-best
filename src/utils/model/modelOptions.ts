@@ -373,6 +373,26 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
   } else {
     payg3pOptions.push(getHaikuOption())
   }
+
+  // Third-party models (only when fully configured)
+  const thirdPartyTiers = ['KIMI', 'GLM', 'MINIMAX'] as const
+  for (const tier of thirdPartyTiers) {
+    const model = process.env[`ANTHROPIC_DEFAULT_${tier}_MODEL`]
+    const baseURL = process.env[`${tier}_BASE_URL`]
+    const authToken = process.env[`${tier}_AUTH_TOKEN`]
+
+    if (model && baseURL && authToken) {
+      payg3pOptions.push({
+        value: model,
+        label:
+          process.env[`ANTHROPIC_DEFAULT_${tier}_MODEL_NAME`] || tier,
+        description:
+          process.env[`ANTHROPIC_DEFAULT_${tier}_MODEL_DESCRIPTION`] ||
+          `${tier} via third-party API`,
+      })
+    }
+  }
+
   return payg3pOptions
 }
 

@@ -29,6 +29,12 @@ import { LIGHTNING_BOLT } from '../../constants/figures.js'
 import { isModelAllowed } from './modelAllowlist.js'
 import { type ModelAlias, isModelAlias } from './aliases.js'
 import { capitalize } from '../stringUtils.js'
+import {
+  THIRD_PARTY_MODELS,
+  type ThirdPartyModel,
+  isThirdPartyModelAlias,
+  getActualModelName,
+} from './thirdPartyModels.js'
 
 export type ModelShortName = string
 export type ModelName = string
@@ -466,6 +472,12 @@ export function parseUserSpecifiedModel(
         return getDefaultOpusModel() + (has1mTag ? '[1m]' : '')
       case 'best':
         return getBestModel()
+      case 'kimi':
+      case 'glm':
+      case 'minimax':
+        // Return the alias as-is for third-party models
+        // The API layer will handle baseURL and authToken via getThirdPartyModelConfig
+        return modelString
       default:
     }
   }
@@ -615,5 +627,9 @@ export function getMarketingNameForModel(modelId: string): string | undefined {
 }
 
 export function normalizeModelStringForAPI(model: string): string {
+  // Handle third-party model aliases (kimi, glm, minimax)
+  if (isThirdPartyModelAlias(model)) {
+    return getActualModelName(model)
+  }
   return model.replace(/\[(1|2)m\]/gi, '')
 }

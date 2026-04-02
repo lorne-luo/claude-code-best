@@ -17,6 +17,7 @@ import {
   isFirstPartyAnthropicBaseUrl,
 } from 'src/utils/model/providers.js'
 import { getProxyFetchOptions } from 'src/utils/proxy.js'
+import { getThirdPartyModelConfig } from 'src/utils/model/thirdPartyModels.js'
 import {
   getIsNonInteractiveSession,
   getSessionId,
@@ -150,6 +151,24 @@ export async function getAnthropicClient({
       fetch: resolvedFetch,
     }),
   }
+
+  // Check for third-party model-specific authentication (KIMI, GLM, MINIMAX)
+  // This takes priority over Bedrock/Vertex/Foundry for matching models
+  const thirdPartyConfig = getThirdPartyModelConfig(model || '')
+  if (thirdPartyConfig) {
+    logForDebugging(
+      `[API:auth] Using third-party auth for ${thirdPartyConfig.model}`,
+    )
+    const clientConfig: ConstructorParameters<typeof Anthropic>[0] = {
+      apiKey: null, // Use authToken instead
+      authToken: thirdPartyConfig.authToken,
+      baseURL: thirdPartyConfig.baseURL,
+      ...ARGS,
+      ...(isDebugToStdErr() && { logger: createStderrLogger() }),
+    }
+    return new Anthropic(clientConfig)
+  }
+
   if (isEnvTruthy(process.env.CLAUDE_CODE_USE_BEDROCK)) {
     const { AnthropicBedrock } = await import('@anthropic-ai/bedrock-sdk')
     // Use region override for small fast model if specified

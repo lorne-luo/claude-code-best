@@ -1,9 +1,19 @@
 import type { AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS } from '../../services/analytics/index.js'
 import { isEnvTruthy } from '../envUtils.js'
+import { getThirdPartyModelConfig } from './thirdPartyModels.js'
 
-export type APIProvider = 'firstParty' | 'bedrock' | 'vertex' | 'foundry'
+export type APIProvider =
+  | 'firstParty'
+  | 'bedrock'
+  | 'vertex'
+  | 'foundry'
+  | 'thirdParty'
 
-export function getAPIProvider(): APIProvider {
+export function getAPIProvider(model?: string): APIProvider {
+  // Check for third-party model config first (if model is provided)
+  if (model && getThirdPartyModelConfig(model)) {
+    return 'thirdParty'
+  }
   return isEnvTruthy(process.env.CLAUDE_CODE_USE_BEDROCK)
     ? 'bedrock'
     : isEnvTruthy(process.env.CLAUDE_CODE_USE_VERTEX)

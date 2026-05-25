@@ -24,6 +24,11 @@ function getVendorRoot(): string {
   if (distIdx !== -1) {
     return parts.slice(0, distIdx + 1).join(sep) + sep + 'vendor'
   }
+  // Compiled binary: import.meta.url → file:///$bunfs/root/...
+  // Use process.execPath to resolve the actual binary location
+  if (dir.includes('$bunfs')) {
+    return resolve(dirname(process.execPath), 'vendor')
+  }
   // Dev mode — go up from packages/audio-capture-napi/src/ to project root
   return resolve(dir, '..', '..', '..', 'vendor')
 }

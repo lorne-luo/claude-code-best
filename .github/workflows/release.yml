@@ -1,0 +1,159 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+env:
+  BINARY_NAME: openclaude
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: darwin
+            arch: arm64
+            runner: macos-latest
+          - platform: darwin
+            arch: x64
+            runner: macos-latest
+          - platform: linux
+            arch: arm64
+            runner: ubuntu-24.04-arm
+          - platform: linux
+            arch: x64
+            runner: ubuntu-latest
+
+    runs-on: ${{ matrix.runner }}
+    name: Build ${{ matrix.platform }}-${{ matrix.arch }}
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        env:
+          CLAUDE_CODE_SKIP_CHROME_MCP_SETUP: "1"
+        run: bun install --frozen-lockfile
+
+      - name: Set version from date
+        id: version
+        run: echo "VERSION=$(date +'%y.%m.%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Compile binary
+        run: |
+          bun build src/entrypoints/cli.tsx \
+            --compile \
+            --target=bun-${{ matrix.platform }}-${{ matrix.arch }} \
+            --outfile=${{ env.BINARY_NAME }}
+
+      - name: Stage binary with vendor files
+        run: |
+          mkdir -p staging
+          cp ${{ env.BINARY_NAME }} staging/
+
+          # Copy platform-specific vendor files
+          PLATFORM_ARCH=${{ matrix.arch }}-${{ matrix.platform }}
+
+          if [ -d "vendor/audio-capture/$PLATFORM_ARCH" ]; then
+            mkdir -p staging/vendor/audio-capture/$PLATFORM_ARCH
+            cp -r vendor/audio-capture/$PLATFORM_ARCH/* staging/vendor/audio-capture/$PLATFORM_ARCH/
+          fi
+
+          if [ -d "src/utils/vendor/ripgrep/$PLATFORM_ARCH" ]; then
+            mkdir -p staging/vendor/ripgrep/$PLATFORM_ARCH
+            cp -r src/utils/vendor/ripgrep/$PLATFORM_ARCH/* staging/vendor/ripgrep/$PLATFORM_ARCH/
+          fi
+
+      - name: Create archive
+        run: |
+          cd staging
+          tar czf ../${{ env.BINARY_NAME }}-${{ matrix.platform }}-${{ matrix.arch }}.tar.gz *
+
+      - name: Generate checksum
+        run: shasum -a 256 ${{ env.BINARY_NAME }}-${{ matrix.platform }}-${{ matrix.arch }}.tar.gz > ${{ env.BINARY_NAME }}-${{ matrix.platform }}-${{ matrix.arch }}.tar.gz.sha256
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BINARY_NAME }}-${{ matrix.platform }}-${{ matrix.arch }}
+          path: |
+            ${{ env.BINARY_NAME }}-${{ matrix.platform }}-${{ matrix.arch }}.tar.gz
+            ${{ env.BINARY_NAME }}-${{ matrix.platform }}-${{ matrix.arch }}.tar.gz.sha256
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Create Release
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set version from date
+        id: version
+        run: echo "VERSION=$(date +'%y.%m.%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.VERSION }}
+          name: openclaude v${{ steps.version.outputs.VERSION }}
+          body: |
+            ## openclaude v${{ steps.version.outputs.VERSION }}
+
+            Cross-platform standalone binaries for openclaude CLI.
+
+            ### Downloads
+
+            | Platform | Architecture | Archive |
+            |----------|-------------|---------|
+            | macOS | ARM64 (Apple Silicon) | `openclaude-darwin-arm64.tar.gz` |
+            | macOS | x64 (Intel) | `openclaude-darwin-x64.tar.gz` |
+            | Linux | ARM64 | `openclaude-linux-arm64.tar.gz` |
+            | Linux | x64 | `openclaude-linux-x64.tar.gz` |
+
+            ### Installation
+
+            ```bash
+            # Download and extract (example for macOS ARM64)
+            tar xzf openclaude-darwin-arm64.tar.gz
+            # Move to PATH
+            sudo mv openclaude /usr/local/bin/
+            ```
+
+            ### Verification
+
+            ```bash
+            # Verify checksum
+            shasum -a 256 -c openclaude-darwin-arm64.tar.gz.sha256
+            ```
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd artifacts
+          for f in openclaude-*.tar.gz openclaude-*.sha256; do
+            [ -f "$f" ] && gh release upload "v${{ needs.build.outputs.version }}" "$f" --repo "${{ github.repository }}" --clobber
+          done

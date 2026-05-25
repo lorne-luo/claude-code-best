@@ -43,7 +43,7 @@ export function SelectEventMode({
             <Text color="suggestion">{figures.info} Hooks Restricted by Policy</Text>
             <Text dimColor>
               Only hooks from managed settings can run. User-defined hooks from ~/.claude/settings.json,
-              .claude/settings.json, and .claude/settings.local.json are blocked.
+              .claude/settings.open.json, and .claude/settings.local.json are blocked.
             </Text>
           </Box>
         )}

@@ -62,7 +62,7 @@ The following settings are available for you to change:
 ### Global Settings (stored in ~/.claude.json)
 ${globalSettings.join('\n')}
 
-### Project Settings (stored in settings.json)
+### Project Settings (stored in settings.open.json)
 ${projectSettings.join('\n')}
 
 ${modelSection}

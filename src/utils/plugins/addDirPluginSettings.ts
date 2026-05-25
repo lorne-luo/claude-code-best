@@ -19,7 +19,7 @@ type ExtraKnownMarketplace = z.infer<
   ReturnType<typeof ExtraKnownMarketplaceSchema>
 >
 
-const SETTINGS_FILES = ['settings.json', 'settings.local.json'] as const
+const SETTINGS_FILES = ['settings.open.json', 'settings.local.json'] as const
 
 /**
  * Returns a merged record of enabledPlugins from all --add-dir directories.

@@ -1974,7 +1974,7 @@ export function REPL({
     setMessages(prev => [
       ...prev,
       createSystemMessage(
-        `Worktree creation took ${secs}s. For large repos, set \`worktree.sparsePaths\` in .claude/settings.json to check out only the directories you need — e.g. \`{"worktree": {"sparsePaths": ["src", "packages/foo"]}}\`.`,
+        `Worktree creation took ${secs}s. For large repos, set \`worktree.sparsePaths\` in .claude/settings.open.json to check out only the directories you need — e.g. \`{"worktree": {"sparsePaths": ["src", "packages/foo"]}}\`.`,
         'info',
       ),
     ]);

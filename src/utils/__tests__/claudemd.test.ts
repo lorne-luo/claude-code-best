@@ -99,7 +99,7 @@ describe('isMemoryFilePath', () => {
   })
 
   test('returns false for .claude directory non-rules file', () => {
-    expect(isMemoryFilePath('/project/.claude/settings.json')).toBe(false)
+    expect(isMemoryFilePath('/project/.claude/settings.open.json')).toBe(false)
   })
 
   test('returns false for lowercase claude.md (case-sensitive match)', () => {

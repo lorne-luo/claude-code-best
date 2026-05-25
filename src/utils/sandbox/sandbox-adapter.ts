@@ -240,7 +240,7 @@ export function convertToSandboxRuntimeConfig(
   const cwd = getCwdState()
   const originalCwd = getOriginalCwd()
   if (cwd !== originalCwd) {
-    denyWrite.push(resolve(cwd, '.claude', 'settings.json'))
+    denyWrite.push(resolve(cwd, '.claude', 'settings.open.json'))
     denyWrite.push(resolve(cwd, '.claude', 'settings.local.json'))
   }
 

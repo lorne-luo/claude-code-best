@@ -31,7 +31,7 @@ export function getHooksSources(): string[] {
 
   const projectSettings = getSettingsForSource('projectSettings')
   if (hasHooks(projectSettings)) {
-    sources.push('.claude/settings.json')
+    sources.push('.claude/settings.open.json')
   }
 
   const localSettings = getSettingsForSource('localSettings')
@@ -60,7 +60,7 @@ export function getBashPermissionSources(): string[] {
 
   const projectRules = getPermissionRulesForSource('projectSettings')
   if (hasBashPermission(projectRules)) {
-    sources.push('.claude/settings.json')
+    sources.push('.claude/settings.open.json')
   }
 
   const localRules = getPermissionRulesForSource('localSettings')
@@ -119,7 +119,7 @@ export function getOtelHeadersHelperSources(): string[] {
 
   const projectSettings = getSettingsForSource('projectSettings')
   if (hasOtelHeadersHelper(projectSettings)) {
-    sources.push('.claude/settings.json')
+    sources.push('.claude/settings.open.json')
   }
 
   const localSettings = getSettingsForSource('localSettings')
@@ -146,7 +146,7 @@ export function getApiKeyHelperSources(): string[] {
 
   const projectSettings = getSettingsForSource('projectSettings')
   if (hasApiKeyHelper(projectSettings)) {
-    sources.push('.claude/settings.json')
+    sources.push('.claude/settings.open.json')
   }
 
   const localSettings = getSettingsForSource('localSettings')
@@ -173,7 +173,7 @@ export function getAwsCommandsSources(): string[] {
 
   const projectSettings = getSettingsForSource('projectSettings')
   if (hasAwsCommands(projectSettings)) {
-    sources.push('.claude/settings.json')
+    sources.push('.claude/settings.open.json')
   }
 
   const localSettings = getSettingsForSource('localSettings')
@@ -200,7 +200,7 @@ export function getGcpCommandsSources(): string[] {
 
   const projectSettings = getSettingsForSource('projectSettings')
   if (hasGcpCommands(projectSettings)) {
-    sources.push('.claude/settings.json')
+    sources.push('.claude/settings.open.json')
   }
 
   const localSettings = getSettingsForSource('localSettings')
@@ -233,7 +233,7 @@ export function getDangerousEnvVarsSources(): string[] {
 
   const projectSettings = getSettingsForSource('projectSettings')
   if (hasDangerousEnvVars(projectSettings)) {
-    sources.push('.claude/settings.json')
+    sources.push('.claude/settings.open.json')
   }
 
   const localSettings = getSettingsForSource('localSettings')

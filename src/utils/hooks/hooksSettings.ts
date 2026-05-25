@@ -172,7 +172,7 @@ export function hookSourceDescriptionDisplayString(source: HookSource): string {
     case 'userSettings':
       return 'User settings (~/.claude/settings.json)'
     case 'projectSettings':
-      return 'Project settings (.claude/settings.json)'
+      return 'Project settings (.claude/settings.open.json)'
     case 'localSettings':
       return 'Local settings (.claude/settings.local.json)'
     case 'pluginHook':

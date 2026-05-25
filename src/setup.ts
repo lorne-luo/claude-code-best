@@ -178,7 +178,7 @@ export async function setup(
       process.stderr.write(
         chalk.red(
           `Error: Can only use --worktree in a git repository, but ${chalk.bold(cwd)} is not a git repository. ` +
-            `Configure a WorktreeCreate hook in settings.json to use --worktree with other VCS systems.\n`,
+            `Configure a WorktreeCreate hook in settings.open.json to use --worktree with other VCS systems.\n`,
         ),
       )
       process.exit(1)
@@ -274,7 +274,7 @@ export async function setup(
     clearMemoryFileCaches()
     // Settings cache was populated in init() (via applySafeConfigEnvironmentVariables)
     // and again at captureHooksConfigSnapshot() above, both from the original dir's
-    // .claude/settings.json. Re-read from the worktree and re-capture hooks.
+    // .claude/settings.open.json. Re-read from the worktree and re-capture hooks.
     updateHooksConfigSnapshot()
   }
 

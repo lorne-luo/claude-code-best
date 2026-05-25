@@ -232,7 +232,7 @@ function parseSettingsFileUncached(path: string): {
 
 /**
  * Get the absolute path to the associated file root for a given settings source
- * (e.g. for $PROJ_DIR/.claude/settings.json, returns $PROJ_DIR)
+ * (e.g. for $PROJ_DIR/.claude/settings.open.json, returns $PROJ_DIR)
  * @param source The source of the settings
  * @returns The root path of the settings file
  */
@@ -254,12 +254,12 @@ export function getSettingsRootPathForSource(source: SettingSource): string {
 
 /**
  * Get the user settings filename based on cowork mode.
- * Returns 'cowork_settings.json' when in cowork mode, 'settings.json' otherwise.
+ * Returns 'cowork_settings.json' when in cowork mode, 'settings.open.json' otherwise.
  *
  * Priority:
  * 1. Session state (set by CLI flag --cowork)
  * 2. Environment variable CLAUDE_CODE_USE_COWORK_PLUGINS
- * 3. Default: 'settings.json'
+ * 3. Default: 'settings.open.json'
  */
 function getUserSettingsFilePath(): string {
   if (
@@ -268,7 +268,7 @@ function getUserSettingsFilePath(): string {
   ) {
     return 'cowork_settings.json'
   }
-  return 'settings.json'
+  return 'settings.open.json'
 }
 
 export function getSettingsFilePathForSource(
@@ -300,7 +300,7 @@ export function getRelativeSettingsFilePathForSource(
 ): string {
   switch (source) {
     case 'projectSettings':
-      return join('.claude', 'settings.json')
+      return join('.claude', 'settings.open.json')
     case 'localSettings':
       return join('.claude', 'settings.local.json')
   }
